@@ -1669,35 +1669,47 @@ function renderCheckoutSummary() {
 
 // --- WhatsApp Message Builder ---
 function generateWhatsAppMessage(name, phone, type, address, notes) {
+    const now = new Date();
+    const dateStr = now.toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric" });
+    const timeStr = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
+
     const divider = "------------------------------------------";
-    let message = `*\uD83D\uDCE3 طلب جديد من EMY BAKES \uD83C\uDF69\u2728*\n${divider}\n`;
-    message += `\uD83D\uDC64 *الاسم:* ${name}\n`;
-    message += `\uD83D\uDCDE *رقم الموبايل:* ${normalizePhone(phone)}\n`;
-    message += `\uD83D\uDE9A *نوع الطلب:* ${type === "delivery" ? "توصيل دليفري" : "استلام من الفرع"}\n`;
-    
+    let message = `\uD83D\uDCE3 *\u0637\u0644\u0628 \u062C\u062F\u064A\u062F \u0645\u0646 Emy Bakes* \u2728\n`;
+    message += `\uD83D\uDCC5 *\u0627\u0644\u062A\u0627\u0631\u064A\u062E:* ${dateStr} | \u23F0 *\u0627\u0644\u0648\u0642\u062A:* ${timeStr}\n`;
+    message += `${divider}\n\n`;
+
+    message += `\uD83D\uDC64 *\u0628\u064A\u0627\u0646\u0627\u062A \u0627\u0644\u0639\u0645\u064A\u0644:*\n`;
+    message += `  \u25AB\uFE0F *\u0627\u0644\u0627\u0633\u0645:* ${name}\n`;
+    message += `  \u25AB\uFE0F *\u0631\u0642\u0645 \u0627\u0644\u0645\u0648\u0628\u0627\u064A\u0644:* ${normalizePhone(phone)}\n`;
+    message += `  \u25AB\uFE0F *\u0637\u0631\u064A\u0642\u0629 \u0627\u0644\u0627\u0633\u062A\u0644\u0627\u0645:* ${type === "delivery" ? "\uD83D\uDE97 \u062A\u0648\u0635\u064A\u0644 \u062F\u0644\u064A\u0641\u0631\u064A" : "\uD83C\uDFEA \u0627\u0633\u062A\u0644\u0627\u0645 \u0645\u0646 \u0627\u0644\u0641\u0631\u0639"}\n`;
+
     if (type === "delivery") {
-        message += `\uD83D\uDCCD *العنوان:* ${address}\n`;
+        message += `  \u25AB\uFE0F *\u0627\u0644\u0639\u0646\u0648\u0627\u0646:* ${address}\n`;
     }
     
-    message += `${divider}\n*\uD83D\uDED2 الأصناف المطلوبة:*\n`;
+    message += `\n${divider}\n\n`;
+    message += `\uD83D\uDED2 *\u0627\u0644\u0645\u0646\u062A\u062C\u0627\u062A \u0627\u0644\u0645\u0637\u0644\u0648\u0628\u0629:*\n\n`;
 
-    cart.forEach(item => {
-        message += `• ${formatPrice(item.qty)}x ${item.nameAr}`;
-        if (item.hasCustomOptions) {
-            message += ` (إضافات: ${item.toppings.join('، ')})`;
+    cart.forEach((item, index) => {
+        message += `*\uD83D\uDD38 ${item.nameAr}*\n`;
+        message += `  \u25AB\uFE0F *\u0627\u0644\u0643\u0645\u064A\u0629:* ${formatPrice(item.qty)}\n`;
+        if (item.hasCustomOptions && item.toppings && item.toppings.length > 0) {
+            message += `  \u25AB\uFE0F *\u0627\u0644\u0625\u0636\u0627\u0641\u0627\u062A:* ${item.toppings.join('\u060C ')}\n`;
         }
-        message += ` ➔ _${formatPrice(item.price * item.qty)} ج.م_\n`;
+        message += `  \u25AB\uFE0F *\u0627\u0644\u0633\u0639\u0631:* ${formatPrice(item.price * item.qty)} \u062C\u002E\u0645\n\n`;
     });
 
     message += `${divider}\n`;
-    
+
     if (notes) {
-        message += `\uD83D\uDCDD *ملاحظات:* ${notes}\n${divider}\n`;
+        message += `\uD83D\uDCDD *\u0645\u0644\u0627\u062D\u0638\u0627\u062A:* ${notes}\n`;
+        message += `${divider}\n`;
     }
 
     const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    message += `\uD83D\uDCB0 *المجموع الإجمالي:* *${formatPrice(total)} ج.م*\n\n`;
-    message += `شكراً لاختياركم *Emy Bakes*! يرجى إرسال هذه الرسالة لتأكيد الطلب وسيتم مراجعته وتجهيزه فوراً. \uD83D\uDC96`;
+    message += `\uD83D\uDCB0 *\u0627\u0644\u0645\u062C\u0645\u0648\u0639 \u0627\u0644\u0625\u062C\u0645\u0627\u0644\u064A:* *${formatPrice(total)} \u062C\u002E\u0645*\n\n`;
+    message += `${divider}\n`;
+    message += `\u064A\u0631\u062C\u064B\u0649 \u0625\u0631\u0633\u0627\u0644 \u0647\u0630\u0647 \u0627\u0644\u0631\u0633\u0627\u0644\u0629 \u0644\u062A\u0623\u0643\u064A\u062F \u0637\u0644\u0628\u0643 \u0648\u062A\u062C\u0647\u064A\u0632\u0647 \u0641\u0648\u0631\u0627\u064B\u002E \u0634\u0643\u0631\u0627\u064B \u0644\u0627\u062E\u062A\u064A\u0627\u0631\u0643\u0645 *Emy Bakes*! \uD83D\uDC96\uD83C\uDF70`;
 
     return message;
 }
